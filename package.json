@@ -1,0 +1,1 @@
+{"name":"meal-map","version":"1.0.0","private":true,"scripts":{"start":"node server.js","test":"node --check server.js"},"engines":{"node":">=18"}}

@@ -6,12 +6,12 @@
 
 ## Features
 
-- Browse 100,000 generated recipe variations across world cuisines
-- Filter by vegetarian, vegan, high protein, quick, one-pan, and cuisine
-- Get pantry based meal suggestions from the local kitchen assistant
+- Browse a generated catalog of 100,000 recipe variations across world cuisines
+- Filter by vegetarian, vegan, high-protein, quick, one-pan, and cuisine choices
+- Get pantry-based meal suggestions from the built-in local kitchen assistant
 - Save recipes and combine ingredients into a shopping list
-- Scale servings, check ingredients, use timers, and cook along step by step
-- Plant based dishes use locally stored photos of vegetarian meals
+- Scale ingredients, check them off, use cooking timers, and follow cook-along steps
+- Plant-based recipes use locally stored photos of vegetarian dishes
 - Keep saved recipes and cooking progress in browser storage
 
 ## Run locally
@@ -22,4 +22,4 @@ Requires Node.js 18 or later.
 npm start
 ```
 
-Open http://localhost:3000. The Node server provides recipe and pantry endpoints. GitHub Pages runs the front end with browser local storage and rule based pantry ideas. The catalog is generated from templates for browsing inspiration; review each recipe before cooking.
+Then open [http://localhost:3000](http://localhost:3000). The local Node server provides the recipe and pantry endpoints. GitHub Pages runs the front end with browser-local storage and rule-based pantry ideas. The catalog is generated from recipe templates for browsing inspiration; individual recipes may need review before cooking.

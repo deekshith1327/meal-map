@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Gather — Cook with confidence</title
+  ><style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap");
+    :root {
+      --ink: #322319;
+      --muted: #806a55;
+      --paper: #fffaf0;
+      --bg: #f4ead8;
+      --line: #e4d1ae;
+      --red: #a9432c;
+      --green: #344b32;
+      --saffron: #f0cf78;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font:
+        14px "DM Sans",
+        sans-serif;
+    }
+    body:before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.11;
+      background: url("assets/indian-mural-texture-v1.jpg") center/cover;
+    }
+    main {
+      max-width: 1180px;
+      margin: auto;
+      padding: 24px 30px 80px;
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      font: 700 25px "Playfair Display";
+    }
+    .brand i {
+      display: inline-block;
+      background: var(--red);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .nav-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .nav-actions button,
+    .back {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 99px;
+      padding: 10px 13px;
+      color: var(--ink);
+      text-decoration: none;
+      font: 600 12px "DM Sans";
+      cursor: pointer;
+    }
+    .hero {
+      margin: 24px 0 17px;
+      border-radius: 28px;
+      min-height: 310px;
+      padding: 37px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(95deg, #193327e8, #1933278a),
+        url("assets/global-food-hero-v1.jpg") center/cover;
+      color: #fff;
+      box-shadow: 0 22px 50px #40301c21;
+      animation: enter 0.55s ease-out;
+    }
+    .hero:after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 1px solid #f1d28a88;
+      border-radius: 20px;
+      pointer-events: none;
+    }
+    .hero h1 {
+      position: relative;
+      font: 700 clamp(40px, 5vw, 68px)/0.94 "Playfair Display";
+      letter-spacing: -3px;
+      max-width: 700px;
+      margin: 16px 0;
+    }
+    .eyebrow {
+      position: relative;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #f1d28a;
+    }
+    .hero p {
+      position: relative;
+      color: #e4eadf;
+      max-width: 580px;
+      line-height: 1.6;
+    }
+    .meta {
+      position: relative;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .meta span {
+      padding: 7px 10px;
+      background: #ffffff20;
+      border: 1px solid #ffffff25;
+      border-radius: 99px;
+      font-size: 12px;
+    }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .toolgroup {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .servings {
+      display: flex;
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 5px;
+    }
+    .servings button {
+      width: 30px;
+      height: 30px;
+      border: 0;
+      border-radius: 8px;
+      background: #f1e3c9;
+      cursor: pointer;
+      font-size: 17px;
+    }
+    .servings b {
+      min-width: 70px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .action {
+      border: 0;
+      border-radius: 10px;
+      background: var(--green);
+      color: white;
+      padding: 10px 13px;
+      font: 600 12px "DM Sans";
+      cursor: pointer;
+      transition: transform 0.18s;
+    }
+    .action:hover {
+      transform: translateY(-2px);
+    }
+    .action.light {
+      background: #e9d9b8;
+      color: #453421;
+    }
+    .action.saved {
+      background: #a7c49a;
+      color: #263b2a;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 17px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 21px;
+      padding: 23px;
+      box-shadow: 0 9px 25px #60451d0a;
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .card h2 {
+      font: 600 25px "Playfair Display";
+      margin: 0;
+    }
+    .card-head small {
+      color: var(--muted);
+    }
+    .ingredient {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee4d1;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+    .ingredient:last-child {
+      border: 0;
+    }
+    .ingredient input {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid #baa987;
+      border-radius: 6px;
+      margin: 0;
+      flex: 0 0 18px;
+      cursor: pointer;
+    }
+    .ingredient input:checked {
+      background: var(--green);
+      border-color: var(--green);
+    }
+    .ingredient input:checked:after {
+      content: "✓";
+      display: block;
+      color: #fff;
+      text-align: center;
+      font-size: 12px;
+    }
+    .ingredient.checked span {
+      text-decoration: line-through;
+      color: #9a8a74;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 13px;
+      padding: 16px 0;
+      border-bottom: 1px solid #eee4d1;
+      transition: background 0.2s;
+    }
+    .step:last-child {
+      border: 0;
+    }
+    .step.active {
+      background: #f6eddb;
+      border-radius: 12px;
+      padding-inline: 9px;
+    }
+    .step.done p {
+      text-decoration: line-through;
+      color: #82907d;
+    }
+    .stepnum {
+      height: 36px;
+      width: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #f1dfbd;
+      color: #9a4b33;
+      font-weight: 800;
+    }
+    .step-content p {
+      margin: 2px 0 10px;
+      line-height: 1.65;
+      color: #554637;
+    }
+    .step-controls {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+    .step-controls button {
+      border: 1px solid var(--line);
+      background: #fffdf8;
+      border-radius: 8px;
+      padding: 7px 9px;
+      cursor: pointer;
+      font: 600 11px "DM Sans";
+      color: #624a38;
+    }
+    .step-controls button.complete {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+    .timer {
+      font-variant-numeric: tabular-nums;
+      color: var(--red);
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .progress-wrap {
+      height: 8px;
+      background: #eee5d4;
+      border-radius: 9px;
+      overflow: hidden;
+      margin: 11px 0;
+    }
+    .progress-wrap b {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #6d8b55, #dfb65c);
+      transition: width 0.45s;
+    }
+    .progress-copy {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .tip {
+      margin-top: 14px;
+      background: #e5efd9;
+      border-radius: 13px;
+      padding: 14px;
+      color: #3d6949;
+      line-height: 1.5;
+    }
+    .more-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .more-card {
+      padding: 15px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 14px;
+    }
+    .more-card b {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .more-card span {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .videos {
+      margin-top: 22px;
+    }
+    .videos h2 {
+      font: 600 26px "Playfair Display";
+      margin: 0 0 12px;
+    }
+    .sources {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+    }
+    .source {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 12px;
+      padding: 13px;
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 700;
+      transition: transform 0.18s;
+    }
+    .source:hover {
+      transform: translateY(-3px);
+    }
+    .source small {
+      display: block;
+      color: var(--muted);
+      font-weight: 400;
+      margin-top: 4px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translate(-50%, 20px);
+      background: var(--green);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 12px;
+      opacity: 0;
+      transition: 0.2s;
+      z-index: 20;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    .cook-mode {
+      position: fixed;
+      inset: 0;
+      z-index: 15;
+      background: #f7efdf;
+      display: none;
+      overflow: auto;
+      padding: 22px;
+    }
+    .cook-mode.open {
+      display: block;
+      animation: enter 0.25s ease-out;
+    }
+    .cook-inner {
+      max-width: 760px;
+      margin: auto;
+    }
+    .cook-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cook-step {
+      font: 600 clamp(25px, 5vw, 45px)/1.2 "Playfair Display";
+      margin: 30px 0;
+    }
+    .cook-next {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .cook-next button {
+      border: 0;
+      background: var(--green);
+      color: white;
+      border-radius: 11px;
+      padding: 13px 18px;
+      font: 600 14px "DM Sans";
+      cursor: pointer;
+    }
+    @keyframes enter {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+    @media (max-width: 800px) {
+      main {
+        padding: 18px;
+      }
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .more-grid,
+      .sources {
+        grid-template-columns: 1fr;
+      }
+      .hero {
+        padding: 27px;
+        min-height: 290px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *:before,
+      *:after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+  <main>
+    <nav class="nav">
+      <a class="back" href="./">← Back to Gather</a>
+      <div class="brand">gather<i></i></div>
+      <div class="nav-actions">
+        <button id="save">♡ Save recipe</button
+        ><button id="share">↗ Share</button>
+      </div>
+    </nav>
+    <section class="hero" id="hero">
+      <div class="eyebrow" id="tag">Gather kitchen · recipe</div>
+      <h1 id="title">Preparing your recipe…</h1>
+      <p id="desc">A complete cooking plan will appear here.</p>
+      <div class="meta" id="meta"></div>
+    </section>
+    <div class="toolbar">
+      <div class="toolgroup">
+        <span>Scale recipe</span>
+        <div class="servings">
+          <button id="minus">−</button><b><span id="serves">2</span> servings</b
+          ><button id="plus">+</button>
+        </div>
+      </div>
+      <div class="toolgroup">
+        <button class="action light" id="checkAll">Check ingredients</button
+        ><button class="action" id="cook">▶ Start cook-along</button>
+      </div>
+    </div>
+    <div class="progress-copy" id="progressCopy">
+      Cooking progress · 0 of 5 steps
+    </div>
+    <div class="progress-wrap"><b id="progress"></b></div>
+    <section class="layout">
+      <aside class="card">
+        <div class="card-head">
+          <h2>Ingredients</h2>
+          <small id="checkedCount">0 checked</small>
+        </div>
+        <div id="ingredients"></div>
+        <div class="tip" id="tip"></div>
+      </aside>
+      <article class="card">
+        <div class="card-head">
+          <h2>Method</h2>
+          <small>Tap a step as you go</small>
+        </div>
+        <div id="steps"></div>
+      </article>
+    </section>
+    <section class="more-grid">
+      <article class="more-card">
+        <b>Before you begin</b
+        ><span
+          >Gather and measure ingredients first. Keep a clean board and a small
+          waste bowl nearby.</span
+        >
+      </article>
+      <article class="more-card">
+        <b>Make it your own</b
+        ><span
+          >Taste as you cook. Adjust salt, acidity, heat, and texture to your
+          preference.</span
+        >
+      </article>
+      <article class="more-card">
+        <b>Kitchen safety</b
+        ><span
+          >Cook proteins thoroughly, wash hands after handling raw ingredients,
+          and use a stable cutting board.</span
+        >
+      </article>
+    </section>
+    <section class="videos">
+      <h2>Learn by watching</h2>
+      <div class="sources" id="sources"></div>
+    </section>
+  </main>
+  <section class="cook-mode" id="cookMode">
+    <div class="cook-inner">
+      <header class="cook-header">
+        <a class="back" href="./">Gather cook-along</a
+        ><button class="action light" id="exitCook">Exit mode</button>
+      </header>
+      <div class="eyebrow" style="margin-top: 60px; color: #a9432c">
+        Cooking step <span id="cookNum">1</span> of
+        <span id="cookTotal">5</span>
+      </div>
+      <h1
+        id="cookTitle"
+        style="font: 700 clamp(36px, 6vw, 64px)/1 &quot;Playfair Display&quot;"
+      ></h1>
+      <div class="cook-step" id="cookText"></div>
+      <div class="cook-next">
+        <button id="cookPrev" class="action light">← Previous</button
+        ><button id="cookDone">Done, next step →</button>
+      </div>
+    </div>
+  </section>
+  <div class="toast" id="toast"></div>
+  <script>
+    const id = new URLSearchParams(location.search).get("id") || 0,
+      cap = (s) => s.replace(/\b\w/g, (x) => x.toUpperCase());
+    const progressKey = `gather.progress.${id}`;
+    let recipe = null,
+      servings = 2,
+      active = 0,
+      completed = new Set(),
+      timerId = null,
+      seconds = 0;
+    function persistProgress() {
+      localStorage.setItem(progressKey, JSON.stringify({ servings, active, checked: [...checked], completed: [...completed] }));
+    }
+    const showToast = (s) => {
+      toast.textContent = s;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2300);
+    };
+    function draw() {
+      if (!recipe) return;
+      ingredients.innerHTML = recipe.ingredients
+        .map((x, i) => {
+          let q = x.replace(
+            /^([\d.]+)\s/,
+            (m) =>
+              `${((parseFloat(m) * servings) / 2).toFixed(1).replace(/\.0$/, "")} `,
+          );
+          return `<label class="ingredient ${checked.has(i) ? "checked" : ""}"><input type="checkbox" data-ing="${i}" ${checked.has(i) ? "checked" : ""}><span>${cap(q)}</span></label>`;
+        })
+        .join("");
+      steps.innerHTML = recipe.steps
+        .map(
+          (x, i) =>
+            `<div class="step ${i === active ? "active" : ""} ${completed.has(i) ? "done" : ""}"><b class="stepnum">${completed.has(i) ? "✓" : i + 1}</b><div class="step-content"><p>${x}</p><div class="step-controls"><button data-step="${i}">${completed.has(i) ? "Completed" : "Mark complete"}</button>${i === active ? '<button id="stepTimer">⏱ 5 min timer</button><span class="timer" id="timer"></span>' : ""}</div></div></div>`,
+        )
+        .join("");
+      steps
+        .querySelectorAll("[data-step]")
+        .forEach((b) => (b.onclick = () => toggleStep(+b.dataset.step)));
+      steps.querySelector("#stepTimer")?.addEventListener("click", startTimer);
+      checkedCount.textContent = `${checked.size} checked`;
+      progress.style.width = `${(completed.size / recipe.steps.length) * 100}%`;
+      progressCopy.textContent = `Cooking progress · ${completed.size} of ${recipe.steps.length} steps`;
+      cookTotal.textContent = recipe.steps.length;
+      cookNum.textContent = active + 1;
+      cookTitle.textContent = recipe.name;
+      cookText.textContent = recipe.steps[active] || "";
+    }
+    function toggleStep(i) {
+      completed.has(i) ? completed.delete(i) : completed.add(i);
+      active = Math.min(i + 1, recipe.steps.length - 1);
+      persistProgress();
+      draw();
+    }
+    function startTimer() {
+      seconds = 300;
+      clearInterval(timerId);
+      timerId = setInterval(() => {
+        seconds--;
+        let t = document.querySelector("#timer");
+        if (t)
+          t.textContent = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+        if (seconds <= 0) {
+          clearInterval(timerId);
+          showToast("Timer complete — check your food.");
+        }
+      }, 1000);
+      showToast("5 minute step timer started");
+    }
+    const checked = new Set();
+    function localMeal(value) {
+      const bases = ["rice bowl", "pasta", "taco", "wrap", "noodle bowl", "flatbread", "salad", "soup", "curry", "stir-fry", "grain bowl", "sandwich"];
+      const proteins = ["chickpea", "tofu", "chicken", "mushroom", "lentil", "egg", "paneer", "salmon", "black bean", "cauliflower"];
+      const styles = ["lemon herb", "smoky", "coconut", "garlic chilli", "tomato basil", "peanut lime", "ginger sesame", "mediterranean", "masala", "roasted"];
+      const cuisines = ["Indian", "Italian", "Mexican", "Japanese", "Thai", "Chinese", "Korean", "Greek", "Lebanese", "French", "Spanish", "Vietnamese", "Turkish", "Ethiopian", "Brazilian", "Caribbean", "Moroccan", "Indonesian", "American", "Middle Eastern"];
+      const n = Math.max(0, Math.min(99999, Number(value) || 0));
+      const b = bases[n % bases.length], p = proteins[Math.floor(n / bases.length) % proteins.length], s = styles[Math.floor(n / (bases.length * proteins.length)) % styles.length], c = cuisines[n % cuisines.length];
+      const cap = (text) => text.replace(/\b\w/g, (letter) => letter.toUpperCase());
+      const vegan = ["chickpea", "tofu", "mushroom", "lentil", "black bean", "cauliflower"].includes(p);
+      const vegetarian = vegan || ["paneer", "egg"].includes(p);
+      return { id: n, name: `${c} ${cap(s)} ${cap(p)} ${b}`, type: vegan ? "Vegan" : vegetarian ? "Vegetarian" : "High protein", time: 12 + (n % 34), emoji: "🥗", ingredients: [`1 cup ${b}`, `200g ${p}`, "2 cloves garlic, finely chopped", "1 tbsp olive oil", `1 ${s.split(" ")[0]} or lemon`, "A handful of fresh herbs", "Salt and black pepper"], steps: [`Prepare the ${p} and heat olive oil in a pan.`, `Add garlic and cook for 30 seconds, then add the ${p}.`, `Cook the ${b} until tender.`, `Combine everything with ${s} flavours and a splash of cooking water.`, "Taste, season, and finish with fresh herbs."], tip: "Prep every ingredient before the pan gets hot for a calmer cooking flow." };
+    }
+    fetch("/api/meals/" + id)
+      .then((r) => r.json())
+      .catch(() => localMeal(id))
+      .then((m) => {
+        recipe = m;
+        try {
+          const saved = JSON.parse(localStorage.getItem(progressKey) || "null");
+          if (saved) {
+            servings = Math.max(1, Math.min(12, Number(saved.servings) || 2));
+            active = Math.max(0, Math.min(m.steps.length - 1, Number(saved.active) || 0));
+            (saved.checked || []).forEach((i) => checked.add(i));
+            (saved.completed || []).forEach((i) => completed.add(i));
+            serves.textContent = servings;
+          }
+        } catch {}
+        document.title = "Gather — " + m.name;
+        hero.dataset.emoji = m.emoji;
+        const photos = [
+          ["pasta", "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1500&q=85"],
+          ["noodle", "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1500&q=85"],
+          ["taco", "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=1500&q=85"],
+          ["curry", "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=1500&q=85"],
+          ["salad", "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1500&q=85"],
+          ["rice bowl", "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1500&q=85"],
+        ];
+        const photo = photos.find(([key]) => m.name.toLowerCase().includes(key));
+        if (m.type === "Vegan" || m.type === "Vegetarian") {
+          const lower = m.name.toLowerCase();
+          const position = lower.includes("pasta") ? "0% 0%" : lower.includes("noodle") ? "50% 0%" : lower.includes("taco") ? "100% 0%" : lower.includes("curry") || lower.includes("rice bowl") ? "0% 100%" : lower.includes("salad") || lower.includes("grain bowl") ? "50% 100%" : lower.includes("soup") ? "0% 100%" : "100% 100%";
+          hero.style.backgroundImage = `linear-gradient(95deg,#193327dd,#1933274f),url("assets/vegetarian-meals-v1.jpg")`;
+          hero.style.backgroundSize = "100% 100%,300% 200%";
+          hero.style.backgroundPosition = `center,${position}`;
+        } else if (photo) hero.style.backgroundImage = `linear-gradient(95deg,#193327dd,#1933274f),url("${photo[1]}")`;
+        title.textContent = m.name;
+        tag.textContent = m.type + " · Gather recipe";
+        desc.textContent = `A ${m.time}-minute kitchen guide. Adjust servings, check your ingredients, then cook along one step at a time.`;
+        meta.innerHTML = `<span>${m.emoji} ${m.type}</span><span>◷ ${m.time} minutes</span><span>◉ Beginner friendly</span>`;
+        tip.innerHTML = "<b>Kitchen note</b><br>" + m.tip;
+        let q = encodeURIComponent(m.name + " recipe");
+        sources.innerHTML = [
+          [
+            "YouTube",
+            "Watch a step-by-step video",
+            "https://www.youtube.com/results?search_query=" + q,
+          ],
+          [
+            "Tasty",
+            "Find a visual recipe guide",
+            "https://tasty.co/search?q=" + q,
+          ],
+          [
+            "BBC Good Food",
+            "Explore a trusted variation",
+            "https://www.bbcgoodfood.com/search?q=" + q,
+          ],
+        ]
+          .map(
+            (x) =>
+              `<a class="source" target="_blank" rel="noopener" href="${x[2]}">${x[0]} <small>${x[1]} ↗</small></a>`,
+          )
+          .join("");
+        draw();
+      })
+      .catch(() => (title.textContent = "That recipe could not be found."));
+    ingredients.onchange = (e) => {
+      let i = +e.target.dataset.ing;
+      e.target.checked ? checked.add(i) : checked.delete(i);
+      persistProgress();
+      draw();
+    };
+    minus.onclick = () => {
+      servings = Math.max(1, servings - 1);
+      serves.textContent = servings;
+      persistProgress();
+      draw();
+    };
+    plus.onclick = () => {
+      servings = Math.min(12, servings + 1);
+      serves.textContent = servings;
+      persistProgress();
+      draw();
+    };
+    checkAll.onclick = () => {
+      recipe.ingredients.forEach((_, i) => checked.add(i));
+      persistProgress();
+      draw();
+    };
+    function saveRecipe() {
+      let a = JSON.parse(localStorage.getItem("meal.saved") || "[]");
+      if (!a.includes(+id)) a.push(+id);
+      localStorage.setItem("meal.saved", JSON.stringify(a));
+      fetch("/api/state", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ saved: a }),
+      });
+      save.textContent = "✓ Saved";
+      save.classList.add("saved");
+      showToast("Recipe added to your kitchen list");
+    }
+    save.onclick = saveRecipe;
+    share.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        showToast("Recipe link copied");
+      } catch {
+        showToast("Use your browser address bar to share this recipe");
+      }
+    };
+    cook.onclick = () => {
+      cookMode.classList.add("open");
+      document.body.style.overflow = "hidden";
+    };
+    exitCook.onclick = () => {
+      cookMode.classList.remove("open");
+      document.body.style.overflow = "";
+    };
+    cookPrev.onclick = () => {
+      active = Math.max(0, active - 1);
+      persistProgress();
+      draw();
+    };
+    cookDone.onclick = () => {
+      completed.add(active);
+      if (active < recipe.steps.length - 1) active++;
+      else showToast("Recipe complete — enjoy your meal!");
+      persistProgress();
+      draw();
+    };
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        cookMode.classList.remove("open");
+        document.body.style.overflow = "";
+      }
+    });
+  </script>
+</html>

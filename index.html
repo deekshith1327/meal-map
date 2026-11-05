@@ -1,0 +1,950 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Gather — AI Meal Map</title
+  ><style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap");
+    :root {
+      --ink: #2a211c;
+      --muted: #82705f;
+      --paper: #fffdf9;
+      --bg: #f8f2e8;
+      --line: #e9dece;
+      --red: #da6549;
+      --orange: #f5ae61;
+      --green: #2b4937;
+      --mint: #b8d5a5;
+      --cream: #ffe8b5;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 90% 0, #fff4cb 0, transparent 23%), var(--bg);
+      color: var(--ink);
+      font:
+        14px "DM Sans",
+        sans-serif;
+    }
+    main {
+      max-width: 1320px;
+      margin: auto;
+      padding: 20px 30px 70px;
+    }
+    .nav {
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 31px;
+    }
+    .brand {
+      font: 700 25px "Playfair Display";
+      letter-spacing: -1.4px;
+    }
+    .brand i {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--red);
+      margin-left: 3px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      color: #756252;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .nav-links span:first-child {
+      color: var(--ink);
+    }
+    .saved {
+      border: 0;
+      background: var(--green);
+      color: #fff;
+      border-radius: 99px;
+      padding: 10px 14px;
+      font: 600 12px "DM Sans";
+      cursor: pointer;
+      box-shadow: 0 8px 17px #25453322;
+    }
+    .saved b {
+      display: inline-grid;
+      place-items: center;
+      margin-left: 5px;
+      background: #ffffff25;
+      border-radius: 50%;
+      height: 18px;
+      width: 18px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.16fr 0.84fr;
+      gap: 16px;
+    }
+    .welcome {
+      min-height: 414px;
+      background: var(--green);
+      color: #fff;
+      border-radius: 30px;
+      padding: 45px;
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome:before {
+      content: "";
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      border: 1px solid #c1e8ad33;
+      border-radius: 50%;
+      right: -100px;
+      top: -160px;
+    }
+    .welcome:after {
+      content: "✦";
+      position: absolute;
+      color: #d6ef9e26;
+      font-size: 390px;
+      right: -73px;
+      bottom: -188px;
+    }
+    .eyebrow {
+      position: relative;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #c1dda9;
+    }
+    .welcome h1 {
+      position: relative;
+      font: 700 clamp(48px, 5.6vw, 75px)/0.9 "Playfair Display";
+      letter-spacing: -4px;
+      max-width: 660px;
+      margin: 22px 0 17px;
+    }
+    .welcome p {
+      position: relative;
+      color: #d0dfd0;
+      line-height: 1.7;
+      font-size: 15px;
+      max-width: 410px;
+    }
+    .prompt {
+      position: relative;
+      margin-top: 28px;
+      background: #ffffff12;
+      border: 1px solid #ffffff20;
+      border-radius: 15px;
+      padding: 7px;
+      display: flex;
+      max-width: 500px;
+    }
+    .prompt input {
+      min-width: 0;
+      flex: 1;
+      background: transparent;
+      color: white;
+      border: 0;
+      padding: 11px;
+      outline: 0;
+      font: inherit;
+    }
+    .prompt input::placeholder {
+      color: #c8d8c8;
+    }
+    .prompt button {
+      border: 0;
+      border-radius: 10px;
+      background: var(--cream);
+      color: #35422b;
+      padding: 0 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .spark {
+      position: relative;
+      display: flex;
+      gap: 8px;
+      margin-top: 15px;
+    }
+    .spark span {
+      background: #ffffff12;
+      border: 1px solid #ffffff18;
+      border-radius: 99px;
+      padding: 6px 9px;
+      color: #d5e4d4;
+      font-size: 11px;
+    }
+    .studio {
+      border-radius: 30px;
+      background: linear-gradient(165deg, #ffdfa0, #f7b982);
+      padding: 29px;
+      position: relative;
+      overflow: hidden;
+    }
+    .studio:after {
+      content: "☼";
+      font: 220px "Playfair Display";
+      position: absolute;
+      color: #fff4;
+      right: -43px;
+      bottom: -70px;
+    }
+    .studio h2 {
+      position: relative;
+      font: 700 31px/1.04 "Playfair Display";
+      letter-spacing: -1.4px;
+      margin: 14px 0 8px;
+    }
+    .studio p {
+      position: relative;
+      max-width: 275px;
+      line-height: 1.55;
+      color: #7a5034;
+    }
+    .ai-input {
+      position: relative;
+      margin-top: 22px;
+    }
+    .ai-input textarea {
+      width: 100%;
+      resize: none;
+      border: 1px solid #ffffff99;
+      background: #ffffff64;
+      border-radius: 13px;
+      padding: 13px;
+      color: #573e2c;
+      outline: 0;
+      font: inherit;
+      min-height: 83px;
+    }
+    .ai-input textarea::placeholder {
+      color: #966a4c;
+    }
+    .ai-input button {
+      margin-top: 9px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--ink);
+      color: white;
+      font: 600 13px "DM Sans";
+      padding: 11px 14px;
+      cursor: pointer;
+    }
+    .ideas {
+      position: relative;
+      margin-top: 13px;
+      display: grid;
+      gap: 7px;
+    }
+    .idea {
+      border-radius: 11px;
+      background: #ffffff70;
+      padding: 10px 11px;
+    }
+    .idea b {
+      font-size: 12px;
+      display: block;
+    }
+    .idea small {
+      display: block;
+      color: #76533e;
+      margin-top: 4px;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .trust {
+      position: relative;
+      color: #8b5e42;
+      font-size: 10px;
+      margin-top: 9px;
+    }
+    .quick {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      margin: 17px 0 44px;
+    }
+    .quick-card {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 18px;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .quick-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 13px 26px #5e422016;
+    }
+    .quick-card .emoji {
+      font-size: 34px;
+      background: var(--bg);
+      height: 54px;
+      width: 54px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+    }
+    .quick-card b {
+      display: block;
+      font: 600 17px "Playfair Display";
+    }
+    .quick-card small {
+      color: var(--muted);
+      display: block;
+      margin-top: 3px;
+    }
+    .discover {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 17px;
+    }
+    .discover h2 {
+      font: 700 37px/1 "Playfair Display";
+      letter-spacing: -1.7px;
+      margin: 0;
+    }
+    .discover p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+    .search-wrap {
+      position: relative;
+    }
+    .search-wrap:before {
+      content: "⌕";
+      position: absolute;
+      left: 13px;
+      top: 8px;
+      color: #96735e;
+      font-size: 23px;
+    }
+    .search {
+      width: 290px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 12px;
+      padding: 12px 12px 12px 38px;
+      font: inherit;
+      outline: 0;
+    }
+    .filters {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .filters button {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 99px;
+      padding: 8px 13px;
+      color: #725d4c;
+      font: 600 12px "DM Sans";
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .filters button:hover,
+    .filters button.active {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: white;
+    }
+    .results {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 10px 1px 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .recipe {
+      position: relative;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 11px;
+      overflow: hidden;
+      transition:
+        transform 0.22s,
+        box-shadow 0.22s;
+    }
+    .recipe:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 35px #6b442018;
+    }
+    .visual {
+      height: 144px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      font-size: 65px;
+      background: var(--bg);
+      transition: 0.2s;
+    }
+    .recipe:hover .visual {
+      transform: scale(1.02);
+    }
+    .meta {
+      color: var(--red);
+      font-size: 10px;
+      letter-spacing: 1px;
+      font-weight: 700;
+      margin-top: 14px;
+    }
+    .recipe h3 {
+      font: 600 19px/1.08 "Playfair Display";
+      margin: 7px 1px;
+    }
+    .recipe p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      min-height: 35px;
+      margin: 0 1px 12px;
+    }
+    .actions {
+      display: flex;
+      gap: 6px;
+    }
+    .recipe button {
+      border: 0;
+      border-radius: 9px;
+      background: #f4ede4;
+      color: #604a39;
+      padding: 9px 8px;
+      font: 600 11px "DM Sans";
+      cursor: pointer;
+      flex: 1;
+    }
+    .recipe button.on {
+      background: var(--mint);
+      color: #25442d;
+    }
+    .view {
+      border: 1px solid var(--line) !important;
+      background: white !important;
+      color: #4e3a2b !important;
+    }
+    .load {
+      display: block;
+      margin: 26px auto 0;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 11px;
+      padding: 11px 18px;
+      color: #604a39;
+      font: 600 13px "DM Sans";
+      cursor: pointer;
+    }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translate(-50%, 20px);
+      opacity: 0;
+      background: #2e251f;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 12px;
+      z-index: 10;
+      transition: 0.2s;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    @media (max-width: 930px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .welcome {
+        padding: 34px;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+    @media (max-width: 720px) {
+      main {
+        padding: 15px 17px 50px;
+      }
+      .hero {
+        grid-template-columns: 1fr;
+      }
+      .quick {
+        grid-template-columns: 1fr;
+      }
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .discover {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .search {
+        width: 100%;
+      }
+      .search-wrap {
+        width: 100%;
+      }
+      .welcome {
+        min-height: 390px;
+      }
+      .welcome h1 {
+        font-size: 55px;
+      }
+    }
+    @media (max-width: 430px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .nav {
+        margin-bottom: 15px;
+      }
+      .studio {
+        padding: 24px;
+      }
+    }
+  </style>
+  <style>
+    @keyframes muralIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slowDrift{0%,100%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(0,-9px,0) rotate(2deg)}}
+    @keyframes rangoliTurn{to{transform:rotate(360deg)}}
+    @keyframes lineReveal{from{transform:scaleX(.2);opacity:.25}to{transform:scaleX(1);opacity:1}}
+    .nav{animation:muralIn .55s ease-out both}
+    .welcome{isolation:isolate;box-shadow:0 22px 54px #3c2b1822;animation:muralIn .72s .08s cubic-bezier(.2,.7,.2,1) both}
+    .welcome:before{border:2px solid #e2bd7088;box-shadow:inset 0 0 0 5px #ffffff0c,0 0 0 1px #713f2b22}
+    .welcome:after{animation:slowDrift 8s ease-in-out infinite;text-shadow:0 5px 25px #e5bd6e55}
+    .studio{box-shadow:0 22px 54px #7c51251c;animation:muralIn .72s .18s cubic-bezier(.2,.7,.2,1) both}
+    .studio:after{animation:slowDrift 7s ease-in-out infinite}
+    .quick-card{animation:muralIn .45s ease-out both}.quick-card:nth-child(2){animation-delay:.08s}.quick-card:nth-child(3){animation-delay:.16s}
+    .discover{position:relative;padding-top:10px}.discover:after{content:'';position:absolute;bottom:-11px;left:0;width:100%;height:1px;background:linear-gradient(90deg,#a94c32aa,#d8b76f66,transparent);transform-origin:left;animation:lineReveal .7s .2s both}
+    .recipe{animation:muralIn .42s cubic-bezier(.2,.7,.2,1) both;box-shadow:0 8px 21px #4c34150c;transition:transform .28s cubic-bezier(.2,.7,.2,1),box-shadow .28s,border-color .2s}
+    .recipe:hover{transform:translateY(-7px);box-shadow:0 20px 35px #4c341526;border-color:#be8a4c}
+    .visual img{transition:transform .55s cubic-bezier(.2,.7,.2,1),filter .3s;filter:saturate(.94)}.recipe:hover .visual img{transform:scale(1.075);filter:saturate(1.12)}
+    .recipe .actions button{transition:transform .18s,background .2s,color .2s,box-shadow .2s}.recipe .actions button:hover{transform:translateY(-2px);box-shadow:0 5px 12px #52371416}
+    #filterPanel .multi{position:relative;overflow:hidden}#filterPanel .multi:after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent,#ffffff55,transparent);transform:translateX(-120%);transition:transform .4s}#filterPanel .multi:hover:after{transform:translateX(120%)}
+    .saved b{animation:rangoliTurn 22s linear infinite}.toast{animation:muralIn .2s ease-out}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+    @media(min-width:1100px){main{padding-top:26px}.nav{height:66px}.welcome{padding:52px}.welcome h1{max-width:690px}.quick-card{padding:18px}.recipe{animation-delay:calc(var(--card-index,0)*18ms)}}
+  </style>
+  <main>
+    <nav class="nav">
+      <div class="brand">gather<i></i></div>
+      <div class="nav-links">
+        <span>Discover</span><span>My kitchen</span><span>Seasonal</span>
+      </div>
+      <button class="saved" id="list">Shopping list <b id="n">0</b></button>
+    </nav>
+    <section class="hero">
+      <article class="welcome">
+        <div class="eyebrow">Your personal recipe companion</div>
+        <h1>Make every meal feel like a good idea.</h1>
+        <p>
+          Start with what you have, search exactly what you crave, and cook with
+          confidence.
+        </p>
+        <div class="prompt">
+          <input
+            id="pantry"
+            placeholder="I have eggs, rice, tomatoes…"
+          /><button id="ask">Create a meal ✦</button>
+        </div>
+        <div class="spark">
+          <span>15-minute ideas</span><span>Pantry-first</span
+          ><span>1,200 recipes</span>
+        </div>
+      </article>
+      <aside class="studio">
+        <div class="eyebrow" style="color: #8f5a3c">
+          Gather AI kitchen studio
+        </div>
+        <h2>Turn your pantry into a plan.</h2>
+        <p>
+          List your ingredients and receive a practical meal direction — no
+          account, no fuss.
+        </p>
+        <div class="ai-input">
+          <textarea
+            id="pantry2"
+            placeholder="Try: chicken, spinach, yogurt, lemon"
+          ></textarea
+          ><button id="ask2">Ask the kitchen assistant</button>
+        </div>
+        <div class="ideas" id="ideas">
+          <div class="idea">
+            <b>What could I make?</b
+            ><small>Your personalised suggestions will appear here.</small>
+          </div>
+        </div>
+        <div class="trust">
+          ✦ Local smart suggestions · your ingredients stay in this app
+        </div>
+      </aside>
+    </section>
+    <section class="quick">
+      <article class="quick-card" data-q="pasta">
+        <div class="emoji">🍝</div>
+        <div>
+          <b>Comfort classics</b><small>Warm, generous and familiar</small>
+        </div>
+      </article>
+      <article class="quick-card" data-q="salad">
+        <div class="emoji">🥗</div>
+        <div>
+          <b>Fresh & fast</b><small>Bright meals under 25 minutes</small>
+        </div>
+      </article>
+      <article class="quick-card" data-q="curry">
+        <div class="emoji">🍛</div>
+        <div>
+          <b>Big flavour</b><small>Spices, sauces and slow comfort</small>
+        </div>
+      </article>
+    </section>
+    <section class="discover">
+      <div>
+        <h2>Explore the menu</h2>
+        <p>
+          Search the complete Gather collection or browse by how you want to
+          eat.
+        </p>
+      </div>
+      <div class="search-wrap">
+        <input
+          class="search"
+          id="search"
+          placeholder="Search a dish, ingredient or style"
+        />
+      </div>
+    </section>
+    <div class="filters" id="filters"></div>
+    <div class="results" id="results"></div>
+    <section class="grid" id="grid"></section>
+    <button class="load" id="more">Load more recipes</button>
+  </main>
+  <div class="toast" id="toast"></div>
+  <script>
+    const bases = [
+        "rice bowl",
+        "pasta",
+        "taco",
+        "wrap",
+        "noodle bowl",
+        "flatbread",
+        "salad",
+        "soup",
+        "curry",
+        "stir-fry",
+        "grain bowl",
+        "sandwich",
+      ],
+      proteins = [
+        "chickpea",
+        "tofu",
+        "chicken",
+        "mushroom",
+        "lentil",
+        "egg",
+        "paneer",
+        "salmon",
+        "black bean",
+        "cauliflower",
+      ],
+      styles = [
+        "lemon herb",
+        "smoky",
+        "coconut",
+        "garlic chilli",
+        "tomato basil",
+        "peanut lime",
+        "ginger sesame",
+        "mediterranean",
+        "masala",
+        "roasted",
+      ],
+      types = ["Quick", "Vegetarian", "High protein", "One-pan", "Vegan"],
+      emojis = [
+        "🥗",
+        "🍝",
+        "🌮",
+        "🌯",
+        "🍜",
+        "🫓",
+        "🥙",
+        "🍲",
+        "🍛",
+        "🥘",
+        "🍱",
+        "🥪",
+      ],
+      colors = ["#f7d2ad", "#dce9bd", "#f4c5a9", "#e7d7b1", "#c8dfca"];
+    const meals = [];
+    for (let i = 0; i < 1200; i++) {
+      let b = bases[i % bases.length],
+        p = proteins[Math.floor(i / bases.length) % proteins.length],
+        s =
+          styles[
+            Math.floor(i / (bases.length * proteins.length)) % styles.length
+          ];
+      meals.push({
+        id: i,
+        name: `${s.replace(/\b\w/g, (x) => x.toUpperCase())} ${p.replace(/\b\w/g, (x) => x.toUpperCase())} ${b}`,
+        type: types[i % types.length],
+        time: 12 + (i % 34),
+        emoji: emojis[i % emojis.length],
+        desc: `A ${types[i % types.length].toLowerCase()} plate built for real weeknights.`,
+        items: [p, b, "garlic", "olive oil", s.split(" ")[0]],
+        bg: colors[i % colors.length],
+      });
+    }
+    let saved = JSON.parse(localStorage.getItem("meal.saved") || "[]"),
+      filter = "All",
+      visible = 16;
+    filters.innerHTML = ["All", ...types]
+      .map(
+        (x) =>
+          `<button class="${x === "All" ? "active" : ""}" data-f="${x}">${x}</button>`,
+      )
+      .join("");
+    document.querySelectorAll("[data-f]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          filter = b.dataset.f;
+          visible = 16;
+          document
+            .querySelectorAll("[data-f]")
+            .forEach((x) => x.classList.toggle("active", x === filter));
+          render();
+        }),
+    );
+    function selected() {
+      let q = search.value.trim().toLowerCase();
+      return meals.filter(
+        (m) =>
+          (filter === "All" || m.type === filter) &&
+          (!q ||
+            `${m.name} ${m.type} ${m.items.join(" ")}`
+              .toLowerCase()
+              .includes(q)),
+      );
+    }
+    function render() {
+      let all = selected(),
+        show = all.slice(0, visible);
+      results.textContent = `${all.length.toLocaleString()} recipes curated for you`;
+      grid.innerHTML = show
+        .map(
+          (m) =>
+            `<article class="recipe"><div class="visual" style="--bg:${m.bg}">${m.emoji}</div><div class="meta">${m.time} MIN · ${m.type.toUpperCase()}</div><h3>${m.name}</h3><p>${m.desc}</p><div class="actions"><button class="${saved.includes(m.id) ? "on" : ""}" data-save="${m.id}">${saved.includes(m.id) ? "✓ Saved" : "＋ Save"}</button><button class="view" data-view="${m.id}">Recipe →</button></div></article>`,
+        )
+        .join("");
+      n.textContent = saved.length;
+      more.style.display = visible >= all.length ? "none" : "block";
+      document.querySelectorAll("[data-save]").forEach(
+        (b) =>
+          (b.onclick = () => {
+            let id = +b.dataset.save;
+            saved = saved.includes(id)
+              ? saved.filter((x) => x !== id)
+              : [...saved, id];
+            save();
+          }),
+      );
+      document
+        .querySelectorAll("[data-view]")
+        .forEach(
+          (b) =>
+            (b.onclick = () =>
+              (location.href = "/recipe.html?id=" + b.dataset.view)),
+        );
+    }
+    function save() {
+      localStorage.setItem("meal.saved", JSON.stringify(saved));
+      fetch("/api/state", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ saved }),
+      }).catch(() => {});
+      render();
+    }
+    search.oninput = () => {
+      visible = 16;
+      render();
+    };
+    more.onclick = () => {
+      visible += 16;
+      render();
+    };
+    document.querySelectorAll(".quick-card").forEach(
+      (c) =>
+        (c.onclick = () => {
+          search.value = c.dataset.q;
+          visible = 16;
+          render();
+          document
+            .querySelector(".discover")
+            .scrollIntoView({ behavior: "smooth" });
+        }),
+    );
+    function toast(s) {
+      document.querySelector("#toast").textContent = s;
+      document.querySelector("#toast").classList.add("show");
+      setTimeout(
+        () => document.querySelector("#toast").classList.remove("show"),
+        3800,
+      );
+    }
+    list.onclick = () => {
+      let all = [
+        ...new Set(
+          meals.filter((m) => saved.includes(m.id)).flatMap((m) => m.items),
+        ),
+      ];
+      toast(
+        all.length
+          ? all
+              .map((x) => x.replace(/\b\w/g, (y) => y.toUpperCase()))
+              .join(" · ")
+          : "Save recipes and your ingredient list will appear here.",
+      );
+    };
+    async function ask() {
+      let ingredients = (pantry.value || pantry2.value)
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean);
+      ideas.innerHTML =
+        '<div class="idea"><b>Thinking through your kitchen…</b><small>Finding three useful directions.</small></div>';
+      try {
+        let r = await fetch("/api/ai-meal", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ingredients }),
+          }),
+          d = await r.json();
+        ideas.innerHTML = d.ideas
+          .map(
+            (x) =>
+              `<div class="idea"><b>${x.name} · ${x.time} min</b><small>${x.why}</small></div>`,
+          )
+          .join("");
+      } catch {
+        ideas.innerHTML =
+          '<div class="idea"><b>Kitchen assistant unavailable</b><small>Please try again in a moment.</small></div>';
+      }
+    }
+    ask.onclick = ask2.onclick = ask;
+    pantry.onkeydown = (e) => {
+      if (e.key === "Enter") ask();
+    };
+    fetch("/api/state")
+      .then((r) => r.json())
+      .then((s) => {
+        if (s.saved?.length) {
+          saved = s.saved;
+          render();
+        }
+      })
+      .catch(() => {});
+    render();
+  </script>
+  <style>
+    :root{--ink:#332319;--muted:#80664e;--paper:#fffaf0;--bg:#f6eddc;--line:#e6d4b6;--red:#a9432c;--green:#344b32;--cream:#f5d98c}
+    body{background:radial-gradient(ellipse at 7% 0,#f4d89855,transparent 26%),#f6eddc;color:var(--ink)}
+    main{max-width:1500px;padding-inline:42px}
+    .nav{border-bottom:1px solid #dfcfb3;margin-bottom:26px}
+    .welcome{background:linear-gradient(130deg,#283d30d9,#283d30c7),url('/assets/global-food-hero-v1.jpg') center/cover!important;border:1px solid #ffffff35}
+    .welcome:before{border-color:#f6d78655;border-radius:44% 56% 50% 50%;transform:rotate(18deg)}
+    .welcome:after{content:'❋';font-size:330px;color:#f4d98921;right:-42px;bottom:-152px}
+    .studio{background:linear-gradient(155deg,#f4dda5,#e9be7d);border:1px solid #d6b779}
+    .studio:after{content:'✺';color:#a9432c17}
+    .welcome h1,.studio h2,.discover h2,.recipe h3{font-family:'Playfair Display',Georgia,serif}
+    .visual{background-image:linear-gradient(#3d2a1022,#3d2a1000),url('/assets/global-food-hero-v1.jpg');background-size:cover,auto 430%;position:relative;font-size:0}
+    .recipe:nth-child(5n+1) .visual{background-position:center,0% center}.recipe:nth-child(5n+2) .visual{background-position:center,25% center}.recipe:nth-child(5n+3) .visual{background-position:center,50% center}.recipe:nth-child(5n+4) .visual{background-position:center,75% center}.recipe:nth-child(5n) .visual{background-position:center,100% center}
+    .visual:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#34241728,transparent 60%);border-radius:inherit}
+    .recipe{box-shadow:0 4px 16px #60451d0b;border-radius:17px}.recipe h3{font-size:18px}.filters button{border-radius:10px}.filters button.active{background:#344b32}.prompt button,.saved{background:#f1d27f;color:#49391e}
+    @media(min-width:1000px){.hero{grid-template-columns:1.35fr .65fr;min-height:450px}.welcome{min-height:450px}.studio{padding:35px}.grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:17px}.visual{height:155px}.recipe{padding:12px}}
+    @media(max-width:900px){main{padding-inline:20px}}
+    @media(prefers-reduced-motion:no-preference){.recipe,.quick-card{transition:transform .2s,box-shadow .2s}.recipe:hover,.quick-card:hover{transform:translateY(-4px);box-shadow:0 16px 30px #60451d22}}
+  </style>
+  <style>
+    body:before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.055;z-index:-1;background:url('/assets/indian-mural-texture-v1.jpg') center/cover no-repeat}
+    .welcome{background-image:linear-gradient(120deg,#172b22b8,#172b2270),url('/assets/indian-mural-texture-v1.jpg'),url('/assets/global-food-hero-v1.jpg')!important;background-size:cover,cover,cover!important;background-position:center!important}
+    .welcome:before{inset:13px;border:1px solid #e5bd6e88;width:auto;height:auto;border-radius:22px;right:13px;top:13px;pointer-events:none}
+    .welcome:after{content:'❋  ❧  ❋';font-size:22px;letter-spacing:13px;color:#f3d28a;right:28px;bottom:20px}
+    .visual{background-image:linear-gradient(0deg,#21170d22,#21170d00 55%),url('/assets/global-food-hero-v1.jpg')!important;background-repeat:no-repeat;background-size:cover!important;background-position:center!important;display:grid;place-items:center}
+    .recipe:nth-child(4n+1) .visual{background-position:4% 3%!important}.recipe:nth-child(4n+2) .visual{background-position:96% 5%!important}.recipe:nth-child(4n+3) .visual{background-position:1% 96%!important}.recipe:nth-child(4n) .visual{background-position:96% 95%!important}
+    .visual{font-size:0!important}.recipe{overflow:hidden;border:1px solid #dac7a6}.recipe .actions button{transition:transform .16s,background .16s}.recipe .actions button:active,.prompt button:active{transform:scale(.97)}
+    #filterPanel .multi{border:1px solid #ddc9a6;background:#fffaf0;color:#59432d;border-radius:999px;padding:8px 12px;cursor:pointer;font:600 12px 'DM Sans',sans-serif;transition:all .18s}#filterPanel .multi:hover{border-color:#a94c32;transform:translateY(-1px)}#filterPanel .multi.active{background:#344b32;color:#fff;border-color:#344b32}#filterPanel .clear-filters{border:0;background:#f1dfbd;border-radius:9px;padding:8px 11px;cursor:pointer;color:#59432d;font-weight:700}
+    .visual{overflow:hidden;background:#ead9bd!important}.visual img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .4s}.recipe:hover .visual img{transform:scale(1.06)}
+    .spark span{border:1px solid #eacb85;cursor:pointer;transition:background .2s,transform .2s}.spark span:hover{background:#ffffff26;transform:translateY(-2px)}
+    .quick-card{cursor:pointer}.filters button,.clear-filters{transition:transform .16s,background .2s}.filters button:active{transform:scale(.96)}html{scroll-behavior:smooth;scroll-padding-top:24px}
+    @media(min-width:1000px){.hero{grid-template-columns:minmax(0,1.55fr) minmax(330px,.72fr);gap:22px}.welcome{min-height:465px}.studio{min-height:465px}.grid{grid-template-columns:repeat(5,minmax(0,1fr))}.visual{height:175px}}
+  </style>
+  <script>
+    const dishPhotos=[['pasta','https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=900&q=80'],['noodle','https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80'],['taco','https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=900&q=80'],['curry','https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=900&q=80'],['salad','https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80'],['rice bowl','https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80'],['default','https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80']];function addDishPhotos(){document.querySelectorAll('.recipe .visual').forEach(box=>{const card=box.closest('.recipe');const title=card?.querySelector('h3')?.textContent?.toLowerCase()||'';const pair=dishPhotos.find(([key])=>key!=='default'&&title.includes(key))||dishPhotos[dishPhotos.length-1];let im=box.querySelector('img');if(!im){im=document.createElement('img');box.replaceChildren(im)}im.src=pair[1];im.alt=title?`${card.querySelector('h3').textContent} food photo`:'Prepared meal';im.loading='lazy';im.decoding='async';im.onerror=()=>{im.src=dishPhotos[dishPhotos.length-1][1]}})}const foodObserver=new MutationObserver(addDishPhotos);foodObserver.observe(document.querySelector('#grid'),{childList:true});addDishPhotos();
+    document.querySelectorAll('.spark span').forEach((chip,i)=>{chip.setAttribute('role','button');chip.tabIndex=0;chip.onclick=()=>{if(i===0)search.value='';if(i===1){pantry.focus();pantry.scrollIntoView({behavior:'smooth',block:'center'})}if(i===2){document.querySelector('.discover').scrollIntoView({behavior:'smooth'});search.focus()}if(i===0)document.querySelector('.discover').scrollIntoView({behavior:'smooth'});search.dispatchEvent(new Event('input'))};chip.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();chip.click()}}});
+    document.querySelectorAll('.quick-card').forEach(card=>card.addEventListener('click',()=>{document.querySelectorAll('[data-x].active').forEach(b=>b.click());search.value=card.dataset.q;search.dispatchEvent(new Event('input'));document.querySelector('.discover').scrollIntoView({behavior:'smooth',block:'start'})}));
+  </script>
+  <style>
+    @keyframes slowPan{0%{background-position:50% 45%}50%{background-position:52% 48%}100%{background-position:50% 45%}}
+    @keyframes rangoliPulse{0%,100%{opacity:.14;transform:rotate(0) scale(.96)}50%{opacity:.28;transform:rotate(14deg) scale(1.03)}}
+    @keyframes ornamentFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    @keyframes revealUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+    body{position:relative;background:#f5ead4;isolation:isolate}
+    body:before{opacity:.17!important;background:url('/assets/indian-mural-texture-v1.jpg') center/cover fixed no-repeat!important;filter:saturate(.92)}
+    body:after{content:'';position:fixed;z-index:-1;inset:0;pointer-events:none;background:linear-gradient(90deg,#f5ead4c9,#f5ead4a8 12%,#f5ead4a8 88%,#f5ead4c9),linear-gradient(180deg,#f5ead4bb,transparent 20%,transparent 80%,#f5ead4cc);}
+    main{position:relative}
+    .welcome{background-position:center!important;animation:muralIn .8s ease-out both,slowPan 24s ease-in-out 1s infinite!important}
+    .welcome:after{content:'❋';font-size:270px;right:30px;bottom:-93px;color:#f1cf7a52;text-shadow:0 6px 28px #34220b22;animation:rangoliPulse 12s ease-in-out infinite!important}
+    .studio{overflow:hidden}.studio:after{content:'✺';font-size:175px;right:-20px;bottom:-45px;color:#8c41251c;animation:ornamentFloat 6s ease-in-out infinite!important}
+    .quick{position:relative}.quick:before{content:'❧  ❋  ❧';position:absolute;top:-29px;left:50%;transform:translateX(-50%);color:#a64c35a8;letter-spacing:13px;font-size:12px;white-space:nowrap}.quick-card,.discover{opacity:0;transform:translateY(14px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1)}.quick-card.in-view,.discover.in-view{opacity:1;transform:translateY(0)}
+    .discover{scroll-margin-top:26px}.filter-group{animation:revealUp .45s ease-out both}.filter-group:nth-child(2){animation-delay:.08s}
+    .recipe{--reveal-delay:0ms;animation:revealUp .55s cubic-bezier(.2,.7,.2,1) var(--reveal-delay) both!important}.recipe:nth-child(4n+2){--reveal-delay:60ms}.recipe:nth-child(4n+3){--reveal-delay:120ms}.recipe:nth-child(4n){--reveal-delay:180ms}
+    .recipe:hover{transform:translateY(-8px) scale(1.012);box-shadow:0 25px 42px #5536152c}
+    .visual{position:relative}.visual:before{content:'✦';position:absolute;z-index:1;right:11px;top:8px;color:#fff9;font-size:17px;text-shadow:0 2px 8px #34220b55;transition:transform .5s}.recipe:hover .visual:before{transform:rotate(70deg) scale(1.2)}
+    .quick-card:active,.saved:active{transform:scale(.975)}
+    #filterPanel .active-summary{box-shadow:0 5px 18px #5a3b1710}
+    @media(min-width:1000px){body:before{background-size:cover!important}.welcome{background-attachment:local,local,local}.quick{margin-top:25px}.recipe:hover{z-index:2}}
+    @media(prefers-reduced-motion:reduce){body:before,.welcome,.welcome:after,.studio:after,.recipe,.quick-card{animation:none!important;transition:none!important}}
+  </style>
+  <script>
+    (()=>{const watch=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in-view');watch.unobserve(e.target)}}),{threshold:.08});function attach(){document.querySelectorAll('.quick-card,.discover,.recipe').forEach(el=>{if(!el.dataset.motionSeen){el.dataset.motionSeen='1';watch.observe(el)}})}attach();new MutationObserver(attach).observe(document.querySelector('#grid'),{childList:true});})();
+  </script>
+  <style>
+    .nav-links span{cursor:pointer;padding:8px 3px;position:relative;transition:color .18s}.nav-links span:hover,.nav-links span:focus{color:#a9432c;outline:none}.nav-links span:after{content:'';position:absolute;left:0;right:100%;bottom:2px;height:1px;background:#a9432c;transition:right .2s}.nav-links span:hover:after,.nav-links span:focus:after{right:0}
+    #gatherList{position:fixed;inset:0;z-index:50;background:#211a14a8;display:none;place-items:center;padding:22px;backdrop-filter:blur(7px)}#gatherList.open{display:grid;animation:revealUp .2s ease-out both}.list-panel{width:min(550px,100%);max-height:min(720px,88vh);overflow:auto;background:#fffaf0;border:1px solid #d8c39c;border-radius:22px;box-shadow:0 30px 80px #160d0755;padding:24px}.list-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e7d8bd;padding-bottom:14px}.list-head h2{font:700 28px 'Playfair Display';margin:0}.list-close{border:0;background:#f0e5d0;border-radius:50%;height:34px;width:34px;cursor:pointer;font-size:18px}.list-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #eadfce}.list-row b{display:block}.list-row small{color:#826e5d}.list-row button{background:#f1dfbd;border:0;border-radius:8px;padding:7px 9px;cursor:pointer}.list-empty{padding:28px 4px;color:#826e5d;line-height:1.6}.list-foot{font-size:12px;color:#826e5d;margin-top:14px}
+  </style>
+  <script>
+    (()=>{
+      const nav=[...document.querySelectorAll('.nav-links span')];
+      const go=(selector)=>document.querySelector(selector)?.scrollIntoView({behavior:'smooth',block:'center'});
+      nav.forEach((item,i)=>{item.setAttribute('role','button');item.tabIndex=0;const run=()=>{if(i===0)go('.discover');else if(i===1)go('.studio');else{document.querySelectorAll('[data-x].active').forEach(b=>b.click());document.querySelector('#search').value='';go('.quick')}};item.onclick=run;item.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();run()}}});
+      const modal=document.createElement('div');modal.id='gatherList';modal.innerHTML='<section class="list-panel" role="dialog" aria-modal="true" aria-label="Shopping list"><header class="list-head"><h2>Your kitchen list</h2><button class="list-close" aria-label="Close">×</button></header><div class="list-body"></div><div class="list-foot">Saved recipes update this list automatically.</div></section>';document.body.append(modal);
+      const badge=document.querySelector('#n'),body=modal.querySelector('.list-body'),key='meal.saved';let generation=0;
+      async function refresh(){const turn=++generation;let ids=[];try{ids=JSON.parse(localStorage.getItem(key)||'[]')}catch{}badge.textContent=ids.length;if(!ids.length){body.innerHTML='<div class="list-empty">Your list is clear. Save a recipe and its ingredients will collect here.</div>';return}body.innerHTML='<div class="list-empty">Updating your kitchen list…</div>';const meals=await Promise.all(ids.map(id=>fetch('/api/meals/'+id).then(r=>r.json()).catch(()=>null)));if(turn!==generation)return;const ok=meals.filter(Boolean);const ingredients=[...new Set(ok.flatMap(m=>m.ingredients||[]))];body.innerHTML='<div>'+ok.map(m=>`<div class="list-row"><span><b>${m.name}</b><small>${m.time} min · ${m.type}</small></span><button data-remove="${m.id}">Remove</button></div>`).join('')+'</div><h3>Combined ingredients</h3>'+ingredients.map(x=>`<div class="list-row"><span>${x}</span></div>`).join('');body.querySelectorAll('[data-remove]').forEach(b=>b.onclick=async()=>{const next=JSON.parse(localStorage.getItem(key)||'[]').filter(x=>x!==Number(b.dataset.remove));localStorage.setItem(key,JSON.stringify(next));await fetch('/api/state',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({saved:next})});refresh()})}
+      const open=()=>{refresh();modal.classList.add('open')},close=()=>modal.classList.remove('open');document.querySelector('#list').addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();open()},true);modal.querySelector('.list-close').onclick=close;modal.onclick=e=>{if(e.target===modal)close()};document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});window.addEventListener('storage',e=>{if(e.key===key){refresh();if(modal.classList.contains('open'))refresh()}});
+      document.querySelectorAll('.quick-card').forEach((card,i)=>{card.setAttribute('role','button');card.tabIndex=0;card.onclick=()=>{document.querySelectorAll('[data-x].active').forEach(b=>b.click());const field=document.querySelector('#search');field.value=['pasta','salad','curry'][i]||'';field.dispatchEvent(new Event('input',{bubbles:true}));go('.discover')};card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();card.click()}}});
+      document.querySelectorAll('.spark span').forEach((chip,i)=>{chip.setAttribute('role','button');chip.tabIndex=0;chip.onclick=()=>{if(i===0){document.querySelectorAll('[data-x].active').forEach(b=>b.click());document.querySelector('#search').value='';go('.discover')}if(i===1)go('.studio');if(i===2)go('.discover')};chip.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();chip.click()}}});
+      document.querySelector('#grid').addEventListener('click',()=>{setTimeout(refresh,0)});refresh();
+    })();
+  </script>
+</html>
