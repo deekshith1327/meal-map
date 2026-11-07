@@ -7,7 +7,7 @@
 ## Features
 
 - Browse a generated catalog of 100,000 recipe variations across world cuisines
-- Filter by vegetarian, vegan, high-protein, quick, one-pan, and cuisine choices
+- Filter by vegetarian, non-vegetarian, vegan, accurately tagged high-protein, quick, one-pan, and cuisine choices
 - Get pantry-based meal suggestions from the built-in local kitchen assistant
 - Save recipes and combine ingredients into a shopping list
 - Scale ingredients, check them off, use cooking timers, and follow cook-along steps

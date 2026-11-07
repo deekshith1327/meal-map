@@ -42,7 +42,7 @@ const root = __dirname,
     "masala",
     "roasted",
   ],
-  T = ["Quick", "Vegetarian", "High protein", "One-pan", "Vegan"],
+  T = ["Quick", "Vegetarian", "Non-vegetarian", "High protein", "One-pan", "Vegan"],
   E = ["🥗", "🍝", "🌮", "🌯", "🍜", "🫓", "🥙", "🍲", "🍛", "🥘", "🍱", "🥪"],
   cap = (s) => s.replace(/\b\w/g, (x) => x.toUpperCase()),
   send = (r, s, b, t = "application/json; charset=utf-8") => {
@@ -56,19 +56,27 @@ const root = __dirname,
       return { saved: [] };
     }
   },
+  profile = (protein) => {
+    const vegan = ["chickpea", "tofu", "mushroom", "lentil", "black bean", "cauliflower"].includes(protein);
+    const vegetarian = vegan || protein === "paneer";
+    const nonVegetarian = ["chicken", "salmon", "egg"].includes(protein);
+    const highProtein = ["chickpea", "tofu", "chicken", "lentil", "egg", "paneer", "salmon", "black bean"].includes(protein);
+    const type = vegan ? "Vegan" : vegetarian ? "Vegetarian" : "Non-vegetarian";
+    const tags = [...(vegetarian ? ["Vegetarian"] : []), ...(nonVegetarian ? ["Non-vegetarian"] : []), ...(vegan ? ["Vegan"] : []), ...(highProtein ? ["High protein"] : [])];
+    return { type, tags };
+  },
   meal = (id) => {
     id = Math.max(0, Math.min(99999, Number(id) || 0));
     let b = B[id % B.length],
       p = P[Math.floor(id / B.length) % P.length],
-      s = S[Math.floor(id / (B.length * P.length)) % S.length];
+      s = S[Math.floor(id / (B.length * P.length)) % S.length],
+      { type, tags } = profile(p);
     return {
       id,
       name: `${cap(s)} ${cap(p)} ${b}`,
-      type: ["chicken", "salmon"].includes(p)
-        ? "High protein"
-        : ["paneer", "egg"].includes(p)
-          ? "Vegetarian"
-          : "Vegan",
+      type,
+      tags,
+      protein: p,
       time: 12 + (id % 34),
       emoji: E[id % E.length],
       ingredients: [
@@ -105,7 +113,7 @@ const root = __dirname,
 const enhance = (h) =>
   h.replace(
     "</html>",
-    `<style>.filter-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:9px 0}.filter-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.1px;color:#8a6e59;margin-right:4px}.filters button.multi{border-color:#c9d7c3;background:#f8fcf5}.filters button.multi.active{background:#2b4937;color:white;border-color:#2b4937}.cuisine-chip{font-size:11px}.active-summary{display:flex;justify-content:space-between;align-items:center;background:#fffdf9;border:1px solid #e9dece;border-radius:12px;padding:10px 12px;margin-bottom:12px;color:#705c4b;font-size:12px}.clear-filters{border:0;background:#f3e9db;border-radius:7px;padding:6px 9px;font:600 11px DM Sans;cursor:pointer;color:#624a38}</style><script>const cuisines=['Indian','Italian','Mexican','Japanese','Thai','Chinese','Korean','Greek','Lebanese','French','Spanish','Vietnamese','Turkish','Ethiopian','Brazilian','Caribbean','Moroccan','Indonesian','American','Middle Eastern'],diets=['Vegetarian','High protein','Vegan','Quick','One-pan'];meals.length=0;for(let i=0;i<100000;i++){let b=bases[i%bases.length],p=proteins[Math.floor(i/bases.length)%proteins.length],s=styles[Math.floor(i/(bases.length*proteins.length))%styles.length],c=cuisines[i%cuisines.length],tags=[diets[i%diets.length],diets[Math.floor(i/diets.length)%diets.length]];meals.push({id:i,name:c+' '+s.replace(/\\b\\w/g,x=>x.toUpperCase())+' '+p.replace(/\\b\\w/g,x=>x.toUpperCase())+' '+b,type:tags[0],tags,cuisine:c,time:12+i%34,emoji:emojis[i%emojis.length],desc:'A '+c+' inspired '+tags.join(' & ').toLowerCase()+' plate, designed for real weeknights.',items:[p,b,'garlic','olive oil',s.split(' ')[0]],bg:colors[i%colors.length]})}let selectedTags=new Set();filters.outerHTML='<div id="filterPanel"><div class="filter-group"><span class="filter-label">Diet & style</span>'+diets.map(x=>'<button class="multi" data-x="'+x+'">'+x+'</button>').join('')+'</div><div class="filter-group"><span class="filter-label">Cuisine</span>'+cuisines.map(x=>'<button class="multi cuisine-chip" data-x="'+x+'">'+x+'</button>').join('')+'</div><div class="active-summary"><span id="filterText">All cuisines · all styles</span><button id="clearFilters" class="clear-filters">Reset filters</button></div></div>';selected=()=>{let q=search.value.trim().toLowerCase(),active=[...selectedTags],ds=active.filter(x=>diets.includes(x)),cs=active.filter(x=>cuisines.includes(x));return meals.filter(m=>(!ds.length||ds.every(x=>m.tags.includes(x)))&&(!cs.length||cs.includes(m.cuisine))&&(!q||(m.name+' '+m.tags.join(' ')+' '+m.cuisine+' '+m.items.join(' ')).toLowerCase().includes(q)))};render=()=>{let all=selected(),show=all.slice(0,visible);results.textContent=all.length.toLocaleString()+' dishes matching your selections';grid.innerHTML=show.map(m=>'<article class="recipe"><div class="visual" style="--bg:'+m.bg+'">'+m.emoji+'</div><div class="meta">'+m.cuisine.toUpperCase()+' · '+m.time+' MIN</div><h3>'+m.name+'</h3><p>'+m.desc+'</p><div class="actions"><button class="'+(saved.includes(m.id)?'on':'')+'" data-save="'+m.id+'">'+(saved.includes(m.id)?'✓ Saved':'＋ Save')+'</button><button class="view" data-view="'+m.id+'">Recipe →</button></div></article>').join('');n.textContent=saved.length;more.style.display=visible>=all.length?'none':'block';document.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{let id=+b.dataset.save;saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];save()});document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>location.href='/recipe.html?id='+b.dataset.view)};document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{let x=b.dataset.x;selectedTags.has(x)?selectedTags.delete(x):selectedTags.add(x);b.classList.toggle('active',selectedTags.has(x));filterText.textContent=selectedTags.size?[...selectedTags].join(' + '):'All cuisines · all styles';visible=16;render()});clearFilters.onclick=()=>{selectedTags.clear();document.querySelectorAll('[data-x]').forEach(b=>b.classList.remove('active'));filterText.textContent='All cuisines · all styles';render()};
+    `<style>.filter-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:9px 0}.filter-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.1px;color:#8a6e59;margin-right:4px}.filters button.multi{border-color:#c9d7c3;background:#f8fcf5}.filters button.multi.active{background:#2b4937;color:white;border-color:#2b4937}.cuisine-chip{font-size:11px}.active-summary{display:flex;justify-content:space-between;align-items:center;background:#fffdf9;border:1px solid #e9dece;border-radius:12px;padding:10px 12px;margin-bottom:12px;color:#705c4b;font-size:12px}.clear-filters{border:0;background:#f3e9db;border-radius:7px;padding:6px 9px;font:600 11px DM Sans;cursor:pointer;color:#624a38}</style><script>const cuisines=['Indian','Italian','Mexican','Japanese','Thai','Chinese','Korean','Greek','Lebanese','French','Spanish','Vietnamese','Turkish','Ethiopian','Brazilian','Caribbean','Moroccan','Indonesian','American','Middle Eastern'],diets=['Vegetarian','Non-vegetarian','High protein','Vegan','Quick','One-pan'];meals.length=0;for(let i=0;i<100000;i++){let b=bases[i%bases.length],p=proteins[Math.floor(i/bases.length)%proteins.length],s=styles[Math.floor(i/(bases.length*proteins.length))%styles.length],c=cuisines[i%cuisines.length],tags=[diets[i%diets.length],diets[Math.floor(i/diets.length)%diets.length]];meals.push({id:i,protein:p,name:c+' '+s.replace(/\\b\\w/g,x=>x.toUpperCase())+' '+p.replace(/\\b\\w/g,x=>x.toUpperCase())+' '+b,type:tags[0],tags,cuisine:c,time:12+i%34,emoji:emojis[i%emojis.length],desc:'A '+c+' inspired '+tags.join(' & ').toLowerCase()+' plate, designed for real weeknights.',items:[p,b,'garlic','olive oil',s.split(' ')[0]],bg:colors[i%colors.length]})}let selectedTags=new Set();filters.outerHTML='<div id="filterPanel"><div class="filter-group"><span class="filter-label">Diet & style</span>'+diets.map(x=>'<button class="multi" data-x="'+x+'">'+x+'</button>').join('')+'</div><div class="filter-group"><span class="filter-label">Cuisine</span>'+cuisines.map(x=>'<button class="multi cuisine-chip" data-x="'+x+'">'+x+'</button>').join('')+'</div><div class="active-summary"><span id="filterText">All cuisines · all styles</span><button id="clearFilters" class="clear-filters">Reset filters</button></div></div>';selected=()=>{let q=search.value.trim().toLowerCase(),active=[...selectedTags],ds=active.filter(x=>diets.includes(x)),cs=active.filter(x=>cuisines.includes(x));return meals.filter(m=>(!ds.length||ds.every(x=>m.tags.includes(x)))&&(!cs.length||cs.includes(m.cuisine))&&(!q||(m.name+' '+m.tags.join(' ')+' '+m.cuisine+' '+m.items.join(' ')).toLowerCase().includes(q)))};render=()=>{let all=selected(),show=all.slice(0,visible);results.textContent=all.length.toLocaleString()+' dishes matching your selections';grid.innerHTML=show.map(m=>'<article class="recipe"><div class="visual" style="--bg:'+m.bg+'">'+m.emoji+'</div><div class="meta">'+m.cuisine.toUpperCase()+' · '+m.time+' MIN</div><h3>'+m.name+'</h3><p>'+m.desc+'</p><div class="actions"><button class="'+(saved.includes(m.id)?'on':'')+'" data-save="'+m.id+'">'+(saved.includes(m.id)?'✓ Saved':'＋ Save')+'</button><button class="view" data-view="'+m.id+'">Recipe →</button></div></article>').join('');n.textContent=saved.length;more.style.display=visible>=all.length?'none':'block';document.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{let id=+b.dataset.save;saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];save()});document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>location.href='/recipe.html?id='+b.dataset.view)};document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{let x=b.dataset.x;selectedTags.has(x)?selectedTags.delete(x):selectedTags.add(x);b.classList.toggle('active',selectedTags.has(x));filterText.textContent=selectedTags.size?[...selectedTags].join(' + '):'All cuisines · all styles';visible=16;render()});clearFilters.onclick=()=>{selectedTags.clear();document.querySelectorAll('[data-x]').forEach(b=>b.classList.remove('active'));filterText.textContent='All cuisines · all styles';render()};
 search.placeholder='Search in English, മലയാളം, or a local food name…';
 search.setAttribute('aria-label','Search dishes, ingredients, and local food names');
 const normalizeSearch=value=>value.toLocaleLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^\\p{L}\\p{M}\\p{N}]+/gu,' ').trim();
@@ -126,7 +134,7 @@ const aliases={
 };
 const aliasLookup=new Map(Object.entries(aliases).map(([key,values])=>[normalizeSearch(key),values.map(normalizeSearch)]));
 const searchStopWords=new Set(['a','an','the','i','me','my','we','want','looking','for','find','show','search','give','make','need','some','please','recipe','recipes','dish','dishes','meal','meals','food','foods','cook','cooking','easy','fresh','healthy','with','how','to','റെസിപ്പി','റെസിപ്പികൾ','പാചകക്കുറിപ്പ്','പാചകവിധി','വിഭവം','വിഭവങ്ങൾ','ഭക്ഷണം','ഭക്ഷണങ്ങൾ','എങ്ങനെ','ചെയ്യാൻ','ഉണ്ടാക്കാൻ','കാണിക്കൂ','എനിക്ക്','വേണം','ഒരു','പുതിയ','എളുപ്പമുള്ള','ആരോഗ്യകരമായ','വേണ്ടി','കൂടെ'].map(normalizeSearch));
-selected=()=>{const q=normalizeSearch(search.value),tokens=q.split(' ').filter(word=>word&&!searchStopWords.has(word)),groups=[];for(let i=0;i<tokens.length;){let span=1,terms;for(let size=Math.min(4,tokens.length-i);size>0;size--){const phrase=tokens.slice(i,i+size).join(' ');if(aliasLookup.has(phrase)){span=size;terms=aliasLookup.get(phrase);break}}groups.push(terms||[tokens[i]]);i+=span}const active=[...selectedTags],ds=active.filter(x=>diets.includes(x)),cs=active.filter(x=>cuisines.includes(x));return meals.filter(m=>{if(ds.length&&!ds.every(x=>m.tags.includes(x)))return false;if(cs.length&&!cs.includes(m.cuisine))return false;if(!groups.length)return true;const haystack=normalizeSearch([m.name,...m.tags,m.cuisine,...m.items,m.desc].join(' '));return groups.every(group=>group.some(term=>haystack.includes(term)))})};
+selected=()=>{const q=normalizeSearch(search.value),tokens=q.split(' ').filter(word=>word&&!searchStopWords.has(word)),groups=[];for(let i=0;i<tokens.length;){let span=1,terms;for(let size=Math.min(4,tokens.length-i);size>0;size--){const phrase=tokens.slice(i,i+size).join(' ');if(aliasLookup.has(phrase)){span=size;terms=aliasLookup.get(phrase);break}}groups.push(terms||[tokens[i]]);i+=span}const active=[...selectedTags],ds=active.filter(x=>diets.includes(x)),cs=active.filter(x=>cuisines.includes(x));return meals.filter(m=>{if(ds.length&&!ds.every(x=>m.tags.includes(x)))return false;if(cs.length&&!cs.includes(m.cuisine))return false;if(!groups.length)return true;const haystack=normalizeSearch([m.name,...m.tags,m.cuisine,...m.items,m.desc].join(' '));const haystackTokens=new Set(haystack.split(' '));return groups.every(group=>group.some(term=>normalizeSearch(term).split(' ').every(token=>haystackTokens.has(token))))})};
 render();</script></html>`,
   );
 http
@@ -192,7 +200,7 @@ http
           page = enhance(page);
           page = page.replace("</html>", `<script>
             (() => {
-              const plantPattern = /\\b(chickpea|tofu|mushroom|lentil|paneer|egg|black bean|cauliflower)\\b/i;
+              const plantPattern = /\\b(chickpea|tofu|mushroom|lentil|paneer|black bean|cauliflower)\\b/i;
               const vegAsset = 'assets/vegetarian-meals-v1.jpg';
               const kindOf = (title) => {
                 const t = title.toLowerCase();
@@ -208,10 +216,12 @@ http
                 meals.forEach((m, i) => {
                   const protein = m.name.match(/\\b(chickpea|tofu|mushroom|lentil|paneer|egg|black bean|cauliflower|chicken|salmon)\\b/i)?.[0]?.toLowerCase() || '';
                   const vegan = ['chickpea','tofu','mushroom','lentil','black bean','cauliflower'].includes(protein);
-                  const vegetarian = vegan || ['paneer','egg'].includes(protein);
-                  m.type = vegan ? 'Vegan' : vegetarian ? 'Vegetarian' : 'High protein';
-                  m.tags = [...(vegetarian ? ['Vegetarian'] : []), ...(vegan ? ['Vegan'] : []), 'High protein', ...(i % 3 === 0 ? ['Quick'] : []), ...(i % 4 === 0 ? ['One-pan'] : [])];
-                  m.desc = 'A ' + m.cuisine + ' inspired ' + m.tags.filter(x => x !== 'High protein').join(' & ').toLowerCase() + ' plate, designed for real weeknights.';
+                  const vegetarian = vegan || protein === 'paneer';
+                  const nonVegetarian = ['chicken','salmon','egg'].includes(protein);
+                  const highProtein = ['chickpea','tofu','chicken','lentil','egg','paneer','salmon','black bean'].includes(protein);
+                  m.type = vegan ? 'Vegan' : vegetarian ? 'Vegetarian' : 'Non-vegetarian';
+                  m.tags = [...(vegetarian ? ['Vegetarian'] : []), ...(nonVegetarian ? ['Non-vegetarian'] : []), ...(vegan ? ['Vegan'] : []), ...(highProtein ? ['High protein'] : []), ...(i % 3 === 0 ? ['Quick'] : []), ...(i % 4 === 0 ? ['One-pan'] : [])];
+                  m.desc = 'A ' + m.cuisine + ' inspired ' + m.type.toLowerCase() + (highProtein ? ' & high-protein' : '') + ' plate, designed for real weeknights.';
                 });
                 if (typeof render === 'function') render();
               }
@@ -234,8 +244,8 @@ http
                 const proteins=['chickpea','tofu','chicken','mushroom','lentil','egg','paneer','salmon','black bean','cauliflower'];
                 const styles=['lemon herb','smoky','coconut','garlic chilli','tomato basil','peanut lime','ginger sesame','mediterranean','masala','roasted'];
                 const cuisines=['Indian','Italian','Mexican','Japanese','Thai','Chinese','Korean','Greek','Lebanese','French','Spanish','Vietnamese','Turkish','Ethiopian','Brazilian','Caribbean','Moroccan','Indonesian','American','Middle Eastern'];
-                const n=Math.max(0,Math.min(99999,Number(id)||0)),b=bases[n%bases.length],p=proteins[Math.floor(n/bases.length)%proteins.length],s=styles[Math.floor(n/(bases.length*proteins.length))%styles.length],c=cuisines[n%cuisines.length],cap=x=>x.replace(/\\b\\w/g,z=>z.toUpperCase()),vegan=['chickpea','tofu','mushroom','lentil','black bean','cauliflower'].includes(p),vegetarian=vegan||['paneer','egg'].includes(p),type=vegan?'Vegan':vegetarian?'Vegetarian':'High protein';
-                return {id:n,name:c+' '+cap(s)+' '+cap(p)+' '+b,type,time:12+n%34,emoji:'🥗',ingredients:['1 cup '+b,'200g '+p,'2 cloves garlic, finely chopped','1 tbsp olive oil','1 '+s.split(' ')[0]+' or lemon','A handful of fresh herbs','Salt and black pepper'],steps:['Prepare the '+p+' and heat olive oil in a pan.','Add garlic and cook for 30 seconds, then add the '+p+'.','Cook the '+b+' until tender.','Combine everything with '+s+' flavours and a splash of cooking water.','Taste, season, and finish with fresh herbs.'],tip:'Prep every ingredient before the pan gets hot for a calmer cooking flow.'};
+                const n=Math.max(0,Math.min(99999,Number(id)||0)),b=bases[n%bases.length],p=proteins[Math.floor(n/bases.length)%proteins.length],s=styles[Math.floor(n/(bases.length*proteins.length))%styles.length],c=cuisines[n%cuisines.length],cap=x=>x.replace(/\\b\\w/g,z=>z.toUpperCase()),vegan=['chickpea','tofu','mushroom','lentil','black bean','cauliflower'].includes(p),vegetarian=vegan||p==='paneer',nonVegetarian=['chicken','salmon','egg'].includes(p),highProtein=['chickpea','tofu','chicken','lentil','egg','paneer','salmon','black bean'].includes(p),type=vegan?'Vegan':vegetarian?'Vegetarian':'Non-vegetarian',tags=[...(vegetarian?['Vegetarian']:[]),...(nonVegetarian?['Non-vegetarian']:[]),...(vegan?['Vegan']:[]),...(highProtein?['High protein']:[])];
+                return {id:n,protein:p,tags,name:c+' '+cap(s)+' '+cap(p)+' '+b,type,time:12+n%34,emoji:'🥗',ingredients:['1 cup '+b,'200g '+p,'2 cloves garlic, finely chopped','1 tbsp olive oil','1 '+s.split(' ')[0]+' or lemon','A handful of fresh herbs','Salt and black pepper'],steps:['Prepare the '+p+' and heat olive oil in a pan.','Add garlic and cook for 30 seconds, then add the '+p+'.','Cook the '+b+' until tender.','Combine everything with '+s+' flavours and a splash of cooking water.','Taste, season, and finish with fresh herbs.'],tip:'Prep every ingredient before the pan gets hot for a calmer cooking flow.'};
               };
               window.fetch = (input, options) => {
                 const url = typeof input === 'string' ? input : input.url;

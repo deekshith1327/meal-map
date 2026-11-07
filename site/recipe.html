@@ -660,8 +660,11 @@
       const b = bases[n % bases.length], p = proteins[Math.floor(n / bases.length) % proteins.length], s = styles[Math.floor(n / (bases.length * proteins.length)) % styles.length], c = cuisines[n % cuisines.length];
       const cap = (text) => text.replace(/\b\w/g, (letter) => letter.toUpperCase());
       const vegan = ["chickpea", "tofu", "mushroom", "lentil", "black bean", "cauliflower"].includes(p);
-      const vegetarian = vegan || ["paneer", "egg"].includes(p);
-      return { id: n, name: `${c} ${cap(s)} ${cap(p)} ${b}`, type: vegan ? "Vegan" : vegetarian ? "Vegetarian" : "High protein", time: 12 + (n % 34), emoji: "🥗", ingredients: [`1 cup ${b}`, `200g ${p}`, "2 cloves garlic, finely chopped", "1 tbsp olive oil", `1 ${s.split(" ")[0]} or lemon`, "A handful of fresh herbs", "Salt and black pepper"], steps: [`Prepare the ${p} and heat olive oil in a pan.`, `Add garlic and cook for 30 seconds, then add the ${p}.`, `Cook the ${b} until tender.`, `Combine everything with ${s} flavours and a splash of cooking water.`, "Taste, season, and finish with fresh herbs."], tip: "Prep every ingredient before the pan gets hot for a calmer cooking flow." };
+      const vegetarian = vegan || p === "paneer";
+      const nonVegetarian = ["chicken", "salmon", "egg"].includes(p);
+      const highProtein = ["chickpea", "tofu", "chicken", "lentil", "egg", "paneer", "salmon", "black bean"].includes(p);
+      const tags = [...(vegetarian ? ["Vegetarian"] : []), ...(nonVegetarian ? ["Non-vegetarian"] : []), ...(vegan ? ["Vegan"] : []), ...(highProtein ? ["High protein"] : [])];
+      return { id: n, protein: p, tags, name: `${c} ${cap(s)} ${cap(p)} ${b}`, type: vegan ? "Vegan" : vegetarian ? "Vegetarian" : "Non-vegetarian", time: 12 + (n % 34), emoji: "🥗", ingredients: [`1 cup ${b}`, `200g ${p}`, "2 cloves garlic, finely chopped", "1 tbsp olive oil", `1 ${s.split(" ")[0]} or lemon`, "A handful of fresh herbs", "Salt and black pepper"], steps: [`Prepare the ${p} and heat olive oil in a pan.`, `Add garlic and cook for 30 seconds, then add the ${p}.`, `Cook the ${b} until tender.`, `Combine everything with ${s} flavours and a splash of cooking water.`, "Taste, season, and finish with fresh herbs."], tip: "Prep every ingredient before the pan gets hot for a calmer cooking flow." };
     }
     fetch("/api/meals/" + id)
       .then((r) => r.json())
