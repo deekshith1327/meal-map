@@ -12,7 +12,7 @@
 - Save recipes and combine ingredients into a shopping list
 - Scale ingredients, check them off, use cooking timers, and follow cook-along steps
 - Plant-based recipes use locally stored photos of vegetarian dishes
-- Search understands common ingredient aliases and local spellings across several languages and scripts (for example fish, machhli, മീൻ, చేప, pescado, and 魚), with accent-insensitive matching
+- Search recognizes common ingredient names, regional variants, and native-script queries—including Malayalam words such as മീൻ, മീൻകറി, ചോറ്, കോഴി, and പരിപ്പ്—alongside common terms in other languages
 - Keep saved recipes and cooking progress in browser storage
 
 ## Run locally
